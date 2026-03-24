@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "rules_dir": "rules",
+  "general_rules_dir": "rules/general",
+  "department_rules_dir": "rules/departments",
+  "data_dir": "data",
+  "db_path": "data/evaluations.db",
+  "embeddings_cache_dir": "data/embeddings",
+  "llm": {
+    "provider": "openai",
+    "model": "MiniMax-M2.5",
+    "base_url": "http://your-internal-api-endpoint/v1",
+    "api_key": "your-api-key-here",
+    "temperature": 0.1,
+    "max_tokens": 4096
+  },
+  "embedding": {
+    "provider": "openai",
+    "model": "Qwen3-Embedding",
+    "base_url": "http://your-internal-api-endpoint/v1",
+    "api_key": "your-api-key-here"
+  },
+  "department_keywords": {
+    "电商": ["电商", "商城", "购物", "订单", "支付", "商品"],
+    "金融": ["金融", "银行", "理财", "贷款", "保险", "转账"],
+    "物流": ["物流", "运输", "配送", "仓储", "快递"],
+    "客服": ["客服", "工单", "售后", "投诉", "咨询"],
+    "营销": ["营销", "推广", "优惠券", "活动", "广告"],
+    "数据分析": ["分析", "报表", "统计", "BI", "可视化", "大数据"],
+    "内容管理": ["内容", "文章", "媒体", "CMS", "发布"],
+    "用户中心": ["用户", "会员", "登录", "注册", "权限", "角色"],
+    "订单": ["订单", "下单", "支付", "退款", "售后"],
+    "库存": ["库存", "SKU", "商品", "采购", "补货"]
+  },
+  "evaluation": {
+    "default_dimension": "功能完整性",
+    "max_retries": 3,
+    "retry_delay": 2,
+    "enable_personalized": true
+  },
+  "report": {
+    "output_dir": "data/reports",
+    "format": "markdown"
+  }
+}
