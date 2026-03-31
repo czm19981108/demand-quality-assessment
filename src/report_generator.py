@@ -1,11 +1,12 @@
 """报告生成模块"""
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime
 from loguru import logger
 
 from .models import DimensionScore, EvaluationResult, EvaluationSource, Report
 from .config import config
+from .rustfs_client import get_rustfs_client
 
 
 def calculate_level(score: float) -> str:
@@ -154,7 +155,9 @@ def save_report(
     requirement_id: str,
     format: str = "markdown"
 ) -> str:
-    """保存报告到文件
+    """保存报告
+
+    如果启用了 RustFS，则上传到 RustFS 对象存储；否则保存到本地文件。
 
     Args:
         report_content: 报告内容
@@ -162,8 +165,19 @@ def save_report(
         format: 报告格式
 
     Returns:
-        报告文件路径
+        报告路径（本地路径或 RustFS 对象键）
     """
+    # 如果启用了 RustFS，优先上传到 RustFS
+    rustfs = get_rustfs_client()
+    if rustfs.enabled:
+        success, object_key = rustfs.upload_report(requirement_id, report_content)
+        if success:
+            logger.info(f"报告已上传到 RustFS: {object_key}")
+            return f"rustfs://{object_key}"
+        else:
+            logger.warning("RustFS 上传失败，回退到本地存储")
+
+    # 回退到本地文件存储
     output_dir = Path(config.report_config.get("output_dir", "data/reports"))
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -174,7 +188,7 @@ def save_report(
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(report_content)
 
-    logger.info(f"报告已保存: {file_path}")
+    logger.info(f"报告已保存到本地: {file_path}")
     return str(file_path)
 
 
@@ -186,7 +200,7 @@ def generate_evaluation_report(
     dimension_scores: List[DimensionScore],
     evaluation_duration: Optional[float] = None,
     save: bool = True
-) -> Report:
+) -> Tuple[Report, Optional[str]]:
     """生成评估报告
 
     Args:
@@ -196,10 +210,10 @@ def generate_evaluation_report(
         system: 系统
         dimension_scores: 维度评分列表
         evaluation_duration: 评估耗时
-        save: 是否保存到文件
+        save: 是否保存到文件/RustFS
 
     Returns:
-        Report 对象
+        (Report 对象, 报告路径)
     """
     # 计算总体评分和等级
     overall_score = calculate_overall_score(dimension_scores)
@@ -219,10 +233,11 @@ def generate_evaluation_report(
     )
 
     # 保存报告
+    report_path = None
     if save:
-        save_report(report_content, requirement_id)
+        report_path = save_report(report_content, requirement_id)
 
-    return Report(
+    report_obj = Report(
         requirement_id=requirement_id,
         requirement_title=requirement_title,
         department=department,
@@ -234,6 +249,8 @@ def generate_evaluation_report(
         generated_at=datetime.now(),
         evaluation_duration=evaluation_duration
     )
+
+    return report_obj, report_path
 
 
 def create_report_node():
@@ -257,7 +274,7 @@ def create_report_node():
                 dimension_scores.append(score_data)
 
         # 生成报告
-        report = generate_evaluation_report(
+        report, report_path = generate_evaluation_report(
             requirement_id=requirement_id,
             requirement_title=requirement_title,
             department=department,
@@ -269,7 +286,7 @@ def create_report_node():
 
         return {
             "report": report.model_dump(),
-            "report_path": report.generated_at
+            "report_path": report_path
         }
 
     return report_generator_node
