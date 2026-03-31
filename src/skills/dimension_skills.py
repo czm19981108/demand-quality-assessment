@@ -7,6 +7,9 @@
 from typing import Dict, List, Optional, Any
 from loguru import logger
 
+# Langfuse 可观测性追踪 - 每次 Skill 调用都会被记录
+from langfuse.decorators import observe
+
 from ..rule_loader import (
     get_rule_provider,
     list_available_dimensions as _get_dimensions_from_loader,
@@ -19,6 +22,7 @@ from .base import SkillResult, SkillMetadata
 
 # ============== Skill 1: 获取指定质量维度的规则 ==============
 
+@observe(as_id="skill_get_quality_dimension_rules")
 def get_quality_dimension_rules(dimension: str, simplify: bool = True) -> SkillResult:
     """
     Skill 1: 获取指定质量维度的评估规则
@@ -106,6 +110,7 @@ def _simplify_rule_content(content: str, dimension: str) -> str:
 
 # ============== Skill 2: 列出所有可用维度 ==============
 
+@observe(as_id="skill_list_available_dimensions")
 def list_available_dimensions(include_descriptions: bool = False) -> SkillResult:
     """
     Skill 2: 列出所有可用的评估维度
@@ -187,6 +192,7 @@ def _get_dimension_descriptions() -> Dict[str, str]:
 
 # ============== Skill 3: 获取部门个性化规则 ==============
 
+@observe(as_id="skill_get_personalized_department_rules")
 def get_personalized_department_rules(
     department: str,
     dimensions: Optional[List[str]] = None
@@ -247,6 +253,7 @@ def get_personalized_department_rules(
         )
 
 
+@observe(as_id="skill_list_available_departments")
 def list_available_departments() -> SkillResult:
     """
     列出所有有个性化规则的部门

@@ -77,6 +77,14 @@ class Config:
             "report": {
                 "output_dir": "data/reports",
                 "format": "markdown"
+            },
+            "rustfs": {
+                "enabled": false,
+                "endpoint": "http://localhost:9000",
+                "access_key": "${RUSTFS_ACCESS_KEY}",
+                "secret_key": "${RUSTFS_SECRET_KEY}",
+                "bucket": "demand-reports",
+                "region": "us-east-1"
             }
         }
 
@@ -148,6 +156,34 @@ class Config:
     @property
     def llm_max_tokens(self) -> int:
         return self.get("llm.max_tokens", 4096)
+
+    @property
+    def rustfs_config(self) -> Dict:
+        return self.get("rustfs", {})
+
+    @property
+    def rustfs_enabled(self) -> bool:
+        return self.get("rustfs.enabled", False)
+
+    @property
+    def rustfs_endpoint(self) -> str:
+        return self.get("rustfs.endpoint", "http://localhost:9000")
+
+    @property
+    def rustfs_access_key(self) -> str:
+        return self.get("rustfs.access_key", os.getenv("RUSTFS_ACCESS_KEY", ""))
+
+    @property
+    def rustfs_secret_key(self) -> str:
+        return self.get("rustfs.secret_key", os.getenv("RUSTFS_SECRET_KEY", ""))
+
+    @property
+    def rustfs_bucket(self) -> str:
+        return self.get("rustfs.bucket", "demand-reports")
+
+    @property
+    def rustfs_region(self) -> str:
+        return self.get("rustfs.region", "us-east-1")
 
 
 # 全局配置实例

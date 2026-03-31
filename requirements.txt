@@ -16,3 +16,9 @@ pathlib (built-in)
 
 # Logging
 loguru>=0.7.0
+
+# Observability - Langfuse
+langfuse>=2.0.0
+
+# Object Storage (RustFS S3 compatible)
+boto3>=1.34.0

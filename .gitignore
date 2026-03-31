@@ -40,3 +40,7 @@ build/
 
 # Claude
 .claude/
+
+# Deployment (contains server-specific configuration)
+deploy/
+downloads/
