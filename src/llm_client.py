@@ -1,4 +1,13 @@
-"""LLM 客户端封装"""
+"""LLM 客户端封装
+
+集成 Langfuse 可观测性 - 自动追踪 LLM 调用：
+- 输入/输出日志
+- Token 使用量
+- 调用延迟
+- 成本估算
+
+Langfuse v4 通过 OpenTelemetry 自动 instrumentation 捕获 LLM 调用
+"""
 from typing import Optional, Dict, Any
 from loguru import logger
 
@@ -53,6 +62,9 @@ def get_llm_client():
 
 def call_llm(prompt: str, **kwargs) -> str:
     """调用 LLM 生成响应
+
+    Langfuse v4 会通过 OpenTelemetry 自动 instrumentation 追踪 LLM 调用，
+    并且我们已经在外层使用了 @observe 装饰器，所以不需要额外 Callback。
 
     Args:
         prompt: 提示词

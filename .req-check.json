@@ -8,9 +8,9 @@
   "embeddings_cache_dir": "data/embeddings",
   "llm": {
     "provider": "openai",
-    "model": "MiniMax-M2.5",
-    "base_url": "http://your-internal-api-endpoint/v1",
-    "api_key": "your-api-key-here",
+    "model": "ark-code-latest",
+    "base_url": "https://ark.cn-beijing.volces.com/api/coding/v3",
+    "api_key": "6eaa08a8-5a4a-429b-b6d9-ecbc28a1b815",
     "temperature": 0.1,
     "max_tokens": 4096
   },
@@ -41,5 +41,13 @@
   "report": {
     "output_dir": "data/reports",
     "format": "markdown"
+  },
+  "rustfs": {
+    "enabled": true,
+    "endpoint": "http://47.114.115.131:9000",
+    "access_key": "admin",
+    "secret_key": "admin@rustfs",
+    "bucket": "demand-reports",
+    "region": "us-east-1"
   }
 }
